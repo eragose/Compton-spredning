@@ -19,7 +19,9 @@ np_array_values = []
 for files in read_files:
     pdfile = pd.read_csv(files, sep=seperator, skiprows=3)           #Specify seperator
     np_array_values.append(pdfile)
+def getCounts():{
 
+}
 print(np_array_values[0])
 
 KaliAm = np.loadtxt("kalibrering/KaliAm_ch001.txt", skiprows = 4)
