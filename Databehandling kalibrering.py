@@ -19,22 +19,29 @@ np_array_values = []
 for files in read_files:
     pdfile = pd.read_csv(files, sep=seperator, skiprows=3)           #Specify seperator
     np_array_values.append(pdfile)
-def getCounts():{
 
-}
 print(np_array_values[0])
 
-KaliAm = np.loadtxt("kalibrering/KaliAm_ch001.txt", skiprows = 4)
-tAm = KaliAm[:, 0]
-countsAm = KaliAm[:, 1]
-(xAm, yAm) = np.unique(countsAm, return_counts=True)
-lI = np.where(xAm == 0)[0][0]
-hI = np.where(xAm == 1000)[0][0]
-xAm = xAm[lI:hI]
-yAm = yAm[lI:hI]
+def getCounts(name: str):
+    data = np.loadtxt("kalibrering/Kali" + name + "_ch001.txt", skiprows=4)
+    counts = data[:, 1]
+    (x, y) = np.unique(counts, return_counts=True)
+    lI = np.where(x == 1)[0][0]
+    hI = np.where(x == 2000)[0][0]
+    x = x[lI:hI]
+    y = y[lI:hI]
+    plt.plot(x, y)
+    plt.title(name)
+    plt.show()
+    return (x, y)
 
-plt.plot(xAm, yAm)
-plt.show()
-KaliCs = np.loadtxt("kalibrering/KaliCaeseium_ch001.txt", skiprows = 4)
-tCs = KaliCs[:, 0]
-countsCs = KaliCs[:, 1]
+(xAm, yAm) = getCounts("Am")
+(xCs, yCs) = getCounts("Caeseium")
+(xCo, yCo) = getCounts("Co")
+(xNa, yNa) = getCounts("Na")
+(xRa, yRa) = getCounts("Ra")
+
+
+
+
+
