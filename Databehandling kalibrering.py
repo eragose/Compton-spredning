@@ -65,7 +65,7 @@ def getChannel(name: str, data: tuple, lower_limit: int, upper_limit: int, guess
     return [popt, perr]
 
 
-#Am = getCounts("Am", hc = 2100)
+Am = getCounts("Am", hc = 2100)
 Cs = getCounts("Caeseium")
 Co = getCounts("Co")
 #Na = getCounts("Na")
