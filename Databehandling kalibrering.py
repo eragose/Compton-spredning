@@ -62,7 +62,7 @@ def getChannel(name: str, data: tuple, lower_limit: int, upper_limit: int, guess
     plt.title(name)
     plt.show()
 
-    return popt
+    return [popt, perr]
 
 
 #Am = getCounts("Am", hc = 2100)
@@ -74,9 +74,10 @@ Ra = getCounts("Ra")
 CsCh = getChannel("Cs channel", Cs, 500, 750, [600, 10, 1000])
 RaCh = getChannel("Ra channel", Ra, 500, 700, [550, 10, 500])
 CoCh = getChannel("Co channel", Co, 1000, 1150, [1050, 10, 10])
-x = [CsCh[0], RaCh[0], CoCh[0]]
+x = np.array([CsCh[0][0], RaCh[0][0], CoCh[0][0]])
+xler = np.array([CsCh[1][0], RaCh[1][0], CoCh[1][0]])
 y = [661.661, 609, 1173.238]
-yler = [0.03, 1, 0.015]
+yler = [0.03, 0.01, 0.015]
 
 def funlin(x, a, b):
     return a*x+b
@@ -87,10 +88,11 @@ popt, pcov = curve_fit(funlin, x, y, p0=pinit, sigma=yler, absolute_sigma=True)
 
 print('a hældning:', popt[0])
 print('b forskydning:', popt[1])
-
 perr = np.sqrt(np.diag(pcov))
 print('usikkerheder:', perr)
-#chmin = np.sum(((y - funlin(x, *popt)) / yler) ** 2)
+
+print(x)
+chmin = np.sum(((y - funlin(x, *popt)) / yler) ** 2)
 #print('chi2:', chmin, ' ---> p:', ss.chi2.cdf(chmin, 4))
 plt.scatter(x, y, label="data")
 plt.plot(xhelp, funlin(xhelp, *popt), label="fit")
