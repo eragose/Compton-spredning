@@ -72,31 +72,42 @@ A5 = getCounts("5", lc = 500)
 A6 = getCounts("6", lc = 500)
 A7 = getCounts("7", lc = 500)
 print(len(Back), len(A1))
-plt.plot(Back[0],Back[1])
+def dif(a,b):
+    for i,j in a,b:
+        Newx0 = []
+        Newx1 = []
+        if i[0] == j[0]:
+            Newx0.append(i[0])
+            Newx1.append(j[1]-i[1])
+    return Newx0,Newx1
+
+Newx = dif(Back,A1)
+print(Newx)
+plt.plot(Newx[0],Newx[1])
 plt.title('1')
 plt.show()
 
 
-CsCh = getChannel("Cs channel", Cs, 500, 750, [600, 10, 1000])
-RaCh = getChannel("Ra channel", Ra, 500, 700, [550, 10, 500])
-CoCh = getChannel("Co channel", Co, 1000, 1150, [1050, 10, 10])
-x = np.array([CsCh[0][0], RaCh[0][0], CoCh[0][0]])
-xler = np.array([CsCh[1][0], RaCh[1][0], CoCh[1][0]])
-y = [661.661, 609, 1173.238]
-yler = [0.03, 0.01, 0.015]
+# CsCh = getChannel("Cs channel", Cs, 500, 750, [600, 10, 1000])
+# RaCh = getChannel("Ra channel", Ra, 500, 700, [550, 10, 500])
+# CoCh = getChannel("Co channel", Co, 1000, 1150, [1050, 10, 10])
+# x = np.array([CsCh[0][0], RaCh[0][0], CoCh[0][0]])
+# xler = np.array([CsCh[1][0], RaCh[1][0], CoCh[1][0]])
+# y = [661.661, 609, 1173.238]
+# yler = [0.03, 0.01, 0.015]
 
-def funlin(x, a, b):
-    return a*x+b
-yler = np.sqrt(y)
-pinit = [1,1]
-xhelp = np.linspace(0, 2000, 500)
-popt, pcov = curve_fit(funlin, x, y, p0=pinit, sigma=yler, absolute_sigma=True)
+# def funlin(x, a, b):
+#     return a*x+b
+# yler = np.sqrt(y)
+# pinit = [1,1]
+# xhelp = np.linspace(0, 2000, 500)
+# popt, pcov = curve_fit(funlin, x, y, p0=pinit, sigma=yler, absolute_sigma=True)
 
-print('a hældning:', popt[0])
-print('b forskydning:', popt[1])
-perr = np.sqrt(np.diag(pcov))
-print('usikkerheder:', perr)
+# print('a hældning:', popt[0])
+# print('b forskydning:', popt[1])
+# perr = np.sqrt(np.diag(pcov))
+# print('usikkerheder:', perr)
 
-print(x)
-chmin = np.sum(((y - funlin(x, *popt)) / yler) ** 2)
+# print(x)
+# chmin = np.sum(((y - funlin(x, *popt)) / yler) ** 2)
 #print('chi2:', chmin, ' ---> p:', ss.chi2.cdf(chmin, 4))
