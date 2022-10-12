@@ -1,5 +1,5 @@
 from re import A
-from turtle import back
+#from turtle import back
 import numpy as np
 import pandas as pd
 import glob
@@ -7,6 +7,7 @@ import os
 import scipy.stats as ss
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
+from itertools import zip_longest
 
 folder = 'Attenuation'
 seperator = ' '
@@ -33,9 +34,9 @@ def getCounts(name: str, lc: int = 1, hc: int = 1000):
     hI = np.where(x >= hc)[0][0]
     x = x[lI:hI]
     y = y[lI:hI]
-    # plt.plot(x, y)
-    # plt.title(name)
-    # plt.show()
+    #plt.plot(x, y)
+    #plt.title(name)
+    #plt.show()
     return (x, y)
 
 def gaussFit(x, mu, sig, a, b, c):
@@ -63,51 +64,65 @@ def getChannel(name: str, data: tuple, lower_limit: int, upper_limit: int, guess
 
     return [popt, perr]
 
-Back = getCounts("bg", )
-A1 = getCounts("1", )
-A2 = getCounts("2", lc = 500)
-A3 = getCounts("3", lc = 500)
-A4 = getCounts("4", lc = 500)
-A5 = getCounts("5", lc = 500)
-A6 = getCounts("6", lc = 500)
-A7 = getCounts("7", lc = 500)
+Back = getCounts("bg")
+A1 = getCounts("1")
+A2 = getCounts("2")
+A3 = getCounts("3")
+A4 = getCounts("4")
+A5 = getCounts("5")
+A6 = getCounts("6")
+A7 = getCounts("7")
 print(len(Back), len(A1))
 def dif(a,b):
-    for i,j in a,b:
-        Newx0 = []
-        Newx1 = []
-        if i[0] == j[0]:
-            Newx0.append(i[0])
-            Newx1.append(j[1]-i[1])
+    Newx0 = []
+    Newx1 = []
+    i = 0
+    for x1 in a[0]:
+        x1 = int(x1)
+        j = 0
+        for x2 in b[0]:
+            x2 = int(x2)
+            #print("i: ", i, "j: ", j, "\n")
+            if x1 == x2:
+                Newx0.append(x1)
+                Newx1.append(b[1][j]-a[1][i])
+            j += 1
+        i += 1
     return Newx0,Newx1
-
+#print("test: ", A1)
 Newx = dif(Back,A1)
-print(Newx)
-plt.plot(Newx[0],Newx[1])
+#print(Newx)
+plt.plot(A1[0][400:800], A1[1][400:800], label = "A1")
+plt.plot(Newx[0][400:800],Newx[1][400:800], label = "dif")
+plt.plot(Back[0][400:800], Back[1][400:800], label = "back")
 plt.title('1')
+plt.legend()
 plt.show()
 
 
-# CsCh = getChannel("Cs channel", Cs, 500, 750, [600, 10, 1000])
-# RaCh = getChannel("Ra channel", Ra, 500, 700, [550, 10, 500])
-# CoCh = getChannel("Co channel", Co, 1000, 1150, [1050, 10, 10])
-# x = np.array([CsCh[0][0], RaCh[0][0], CoCh[0][0]])
-# xler = np.array([CsCh[1][0], RaCh[1][0], CoCh[1][0]])
-# y = [661.661, 609, 1173.238]
-# yler = [0.03, 0.01, 0.015]
+def logFit(x, a, b, c, d):
+    return a/np.log(b*x+c)+d
 
-# def funlin(x, a, b):
-#     return a*x+b
-# yler = np.sqrt(y)
-# pinit = [1,1]
-# xhelp = np.linspace(0, 2000, 500)
-# popt, pcov = curve_fit(funlin, x, y, p0=pinit, sigma=yler, absolute_sigma=True)
+x = Back[0][200:990]
+y = Back[1][200:990]
+yler = np.sqrt(y)
+pinit =  [0.1, 0.00002, 1, 0]
+xhelp = np.linspace(200, 990, 500)
+popt, pcov = curve_fit(logFit, x, y, p0=pinit, sigma=y, absolute_sigma= True)
+print("back fit")
+print('a :', popt[0])
+print('b :', popt[1])
+print('c :', popt[2])
+print('d :', popt[3])
 
-# print('a hældning:', popt[0])
-# print('b forskydning:', popt[1])
-# perr = np.sqrt(np.diag(pcov))
-# print('usikkerheder:', perr)
+perr = np.sqrt(np.diag(pcov))
+print('usikkerheder:', perr)
+chmin = np.sum(((y - logFit(x, *popt)) / yler) ** 2)
+print('chi2:', chmin, ' ---> p:', ss.chi2.cdf(chmin, 4))
 
-# print(x)
-# chmin = np.sum(((y - funlin(x, *popt)) / yler) ** 2)
-#print('chi2:', chmin, ' ---> p:', ss.chi2.cdf(chmin, 4))
+plt.plot(x, logFit(x, *popt), label = "fit")
+
+plt.plot(Back[0][200:990], Back[1][200:990], label = "back")
+plt.title('bg')
+plt.legend()
+plt.show()
