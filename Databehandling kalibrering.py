@@ -76,28 +76,30 @@ RaCh = getChannel("Ra channel", Ra, 500, 700, [550, 10, 500])
 CoCh = getChannel("Co channel", Co, 1000, 1150, [1050, 10, 10])
 x = np.array([CsCh[0][0], RaCh[0][0], CoCh[0][0]])
 xler = np.array([CsCh[1][0], RaCh[1][0], CoCh[1][0]])
-y = [661.661, 609, 1173.238]
+y = [661.661, 609, 1173.238] #KeV
 yler = [0.03, 0.01, 0.015]
-
+#xler =[10, 10, 10]
 def funlin(x, a, b):
     return a*x+b
-yler = np.sqrt(y)
+#yler = np.sqrt(y)
 pinit = [1,1]
 xhelp = np.linspace(0, 2000, 500)
 popt, pcov = curve_fit(funlin, x, y, p0=pinit, sigma=yler, absolute_sigma=True)
-
+print("energy fit")
 print('a hældning:', popt[0])
 print('b forskydning:', popt[1])
 perr = np.sqrt(np.diag(pcov))
 print('usikkerheder:', perr)
 
-print(x)
+#print(x)
 chmin = np.sum(((y - funlin(x, *popt)) / yler) ** 2)
-#print('chi2:', chmin, ' ---> p:', ss.chi2.cdf(chmin, 4))
+print('chi2:', chmin, ' ---> p:', ss.chi2.cdf(chmin, 4))
 plt.scatter(x, y, label="data")
 plt.plot(xhelp, funlin(xhelp, *popt), label="fit")
 plt.legend()
 plt.show()
+
+print("xler: ", xler)
 
 
 

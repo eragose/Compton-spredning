@@ -12,6 +12,25 @@ file_type = '*.txt'
 def gaussFit(x, mu, sig, a, b, c):
     lny = np.log(a) - ((x-mu)**2)/(2*sig)
     return np.exp(lny) - (b*x+c)
+
+def loadData(name):
+    (time, ch0) = np.loadtxt(folder + "compton test" + name + "ch000" + file_type)
+    (time, ch1) = np.loadtxt(folder + "compton test" + name + "ch001" + file_type)
+    return (time, ch0, ch1)
+
+def ChToEnergy(ch):
+    return 1.12166*ch-18.19
+
+def ChsToEnergy(data):
+    size = len(data[0])
+    for i in np.linspace(0, size-1, size):
+        i = int(i)
+        data[1][i] = ChToEnergy(data[1][i])
+        data[2][i] = ChToEnergy(data[2][i])
+
+
+def checkConservation(E1, E2, theta):
+    {}
 def getChannel(name: str, data: tuple, lower_limit: int, upper_limit: int, guess: [int, int, int]):
     x = data[0][lower_limit:upper_limit]
     y = data[1][lower_limit:upper_limit]
