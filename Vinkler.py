@@ -23,10 +23,18 @@ file_type = '.dat'
 #             row = [value.strip() for value in row.split('|')]
 #             csv_writer.writerow(row)
 
-with open("Comptorn spredning 40_ch000.dat",'rb',) as datFile:
+with open("Comptorn spredning 60_ch000.dat",'rb',) as datFile:
     #print([data.split() for data in datFile])
+    X = []
+    x0 = []
     for i in datFile:
-        #print(int.from_bytes(i[:4],'little'))
-        print(len(i.split()))
-    X = [data.split('/') for data in datFile]
-    #print(X)
+        #print(i)
+        x = int.from_bytes(i[:8],'little')
+        X.append(x)
+        x0.append(i)
+    
+    # print(X)
+    # print(np.max(X))
+    # print(len(X))
+    # #print(X)
+    # print(int.from_bytes(b'1001000','big'))
