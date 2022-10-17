@@ -36,7 +36,7 @@ def getCounts(name: str, lc: int = 1, hc: int = 2000):
     return (x, y)
 
 def gaussFit(x, mu, sig, a, b, c):
-    lny = np.log(a) - ((x-mu)**2)/(2*sig)
+    lny = np.log(a) - ((x-mu)**2)/(2*sig**2)
     return np.exp(lny) - (b*x+c)
 def getChannel(name: str, data: tuple, lower_limit: int, upper_limit: int, guess: [int, int, int]):
     x = data[0][lower_limit:upper_limit]
@@ -56,7 +56,7 @@ def getChannel(name: str, data: tuple, lower_limit: int, upper_limit: int, guess
     print('chi2:', chmin, ' ---> p:', ss.chi2.cdf(chmin, 4))
 
     plt.plot(x, y, color="r", label="data")
-    plt.plot(xhelp, gaussFit(xhelp, *popt), 'k-.', label="fitpoisson")
+    plt.plot(xhelp, gaussFit(xhelp, *popt), 'k-.', label="gaussfit")
     plt.legend()
 
     plt.title(name)
@@ -68,16 +68,18 @@ def getChannel(name: str, data: tuple, lower_limit: int, upper_limit: int, guess
 Am = getCounts("Am", hc = 2100)
 Cs = getCounts("Caeseium")
 Co = getCounts("Co")
-#Na = getCounts("Na")
+Na = getCounts("Na")
 Ra = getCounts("Ra")
 
 CsCh = getChannel("Cs channel", Cs, 500, 750, [600, 10, 1000])
 RaCh = getChannel("Ra channel", Ra, 500, 700, [550, 10, 500])
 CoCh = getChannel("Co channel", Co, 1000, 1150, [1050, 10, 10])
-x = np.array([CsCh[0][0], RaCh[0][0], CoCh[0][0]])
-xler = np.array([CsCh[1][0], RaCh[1][0], CoCh[1][0]])
-y = [661.661, 609, 1173.238] #KeV
-yler = [0.03, 0.01, 0.015]
+AmCh = getChannel("Am channel", Am, 40, 80, [60, 0.01, 1])
+CoCh2 = getChannel("Co channel 2", Co, 1140, 1300, [1200, 10, 10])
+x = np.array([CsCh[0][0], RaCh[0][0], CoCh[0][0], CoCh2[0][0]])
+xler = np.array([CsCh[1][0], RaCh[1][0], CoCh[1][0], CoCh2[1][0]])
+y = [661.661, 609, 1173.238, 1331.77] #KeV
+yler = [0.03, 0.01, 0.015, y[3]*0.0015]
 #xler =[10, 10, 10]
 def funlin(x, a, b):
     return a*x+b
