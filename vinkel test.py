@@ -5,9 +5,9 @@ import os
 import scipy.stats as ss
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
-folder = 'Data angles/'
+folder = 'Co/'
 seperator = ' '
-file_type = '.txt'
+file_type = '.dat'
 
 def gaussFit(x, mu, sig, a, b, c):
     lny = np.log(a) - ((x-mu)**2)/(2*sig)
@@ -16,8 +16,8 @@ def gaussFit(x, mu, sig, a, b, c):
 #data = np.loadtxt(folder + "compton test " + "3" + "_ch000" + file_type, skiprows=4)
 #time = data[:,0]
 def loadData(name):
-    dat0 = np.loadtxt(folder + "compton test " + name + "_ch000" + file_type, skiprows=4)
-    dat1 = np.loadtxt(folder + "compton test " + name + "_ch001" + file_type, skiprows=4)
+    dat0 = np.loadtxt(folder + "Comptorn spredning " + name + "_ch000" + file_type, skiprows = 4, unpack = True)
+    dat1 = np.loadtxt(folder + "Comptorn spredning " + name + "_ch001" + file_type, skiprows = 4, unpack = True)
     time = dat0[:,0]
     ch0 = dat0[:,1]
     ch1 = dat1[:,1]
@@ -69,7 +69,7 @@ def getChannel(name: str, data: tuple, lower_limit: int, upper_limit: int, guess
 
     return [popt, perr]
 
-data = loadData("3")
+data = loadData("40")
 #print(data[1], data[2])
 chsToEnergy(data)
 energies = (data[1], data[2])
