@@ -9,7 +9,7 @@ folder = 'Co/'
 seperator = ' '
 file_type = '.txt'
 
-#data = np.loadtxt(folder + "Comptorn spredning 40_ch000" + file_type, skiprows=4)
+test = np.loadtxt(folder + "Comptorn spredning 40_ch000" + file_type, skiprows=4)
 #counts = data[:, 1]
 #(x, y) = np.unique(counts, return_counts=True)
 #lI = np.where(x == 0)[0][0]
@@ -22,19 +22,19 @@ file_type = '.txt'
 #test = np.loadtxt("Co/Comptorn spredning 40_ch000.dat")
 #test = np.fromfile("Co/Comptorn spredning 40_ch000.dat", dtype=int)
 
-def gaussFit(x, mu, sig, a, b, c):
+def gaussFit(x, mu, sig, a):
     lny = np.log(a) - ((x-mu)**2)/(2*sig)
-    return np.exp(lny) - (b*x+c)
+    return np.exp(lny)+1
 
 #data = np.loadtxt(folder + "compton test " + "3" + "_ch000" + file_type, skiprows=4)
 #time = data[:,0]
 def loadData(name):
-    dat0 = np.loadtxt(folder + "Comptorn spredning " + name + "_ch000" + file_type, skiprows = 4, unpack = True)
-    dat1 = np.loadtxt(folder + "Comptorn spredning " + name + "_ch001" + file_type, skiprows = 4, unpack = True)
+    dat0 = np.loadtxt(folder + "Comptorn spredning " + name + "_ch000" + file_type, skiprows = 4)
+    dat1 = np.loadtxt(folder + "Comptorn spredning " + name + "_ch001" + file_type, skiprows = 4)
     time = dat0[:,0]
     ch0 = dat0[:,1]
     ch1 = dat1[:,1]
-    return (time, ch0, ch1)
+    return [time, ch0, ch1]
 
 def chToEnergy(ch):
     return 1.12166*ch-18.19
@@ -47,27 +47,28 @@ def chsToEnergy(data):
         data[2][i] = chToEnergy(data[2][i])
 
 def conservation(E1, theta):
-    mc2 = 0.5 #MeV
+    mc2 = 0.5*1000 #keV
     return E1/(1+(E1/mc2)*(1-np.cos(theta*np.pi/180)))
-def checkConservation(E1, E2, theta, error = 10):
-    if np.abs(E2-conservation(E1, theta)) < error:
-        return True
+def checkConservation(E1, E2, theta, error = 0.11):
+    if (np.abs(1-E2/conservation(E1, theta)) < error):
+        if np.abs(E1-E2)>120:
+            return True
     else:
         return False
 
 
-def getChannel(name: str, data: tuple, lower_limit: int, upper_limit: int, guess: [int, int, int]):
-    x = data[0][lower_limit:upper_limit]
-    y = data[1][lower_limit:upper_limit]
+def getFit(name: str, data: tuple, guess: [int, int, int], lower_limit: int = 0, upper_limit: int = 1000):
+    x = data[0]
+    y = data[1]
     yler = np.sqrt(y)
-    pinit = guess + [0,0]
+    pinit = guess
     xhelp = np.linspace(lower_limit, upper_limit, 500)
     popt, pcov = curve_fit(gaussFit, x, y, p0=pinit, sigma=yler, absolute_sigma=True)
     print(name)
     print('mu :', popt[0])
     print('sigma :', popt[1])
     print('scaling', popt[2])
-    print('background', popt[3], popt[4])
+    #print('background', popt[3], popt[4])
     perr = np.sqrt(np.diag(pcov))
     print('usikkerheder:', perr)
     chmin = np.sum(((y - gaussFit(x, *popt)) / yler) ** 2)
@@ -90,16 +91,32 @@ ens1 = []
 ens2 = []
 n = len(data[0])
 for i in np.linspace(0, n-1, n):
+    #print(i)
     i = int(i)
-    if checkConservation(data[1][i], data[2][i], 40, 10):
+
+    if checkConservation(data[1][i], data[2][i], 40):
         ens1 += [data[1][i]]
         ens2 += [data[2][i]]
 
 e1 = np.unique(ens1, return_counts= True)
 lI = np.where(e1[0]>0)
-plt.scatter(e1[0][lI], e1[1][lI])
+#print(lI)
+plt.plot(e1[0], e1[1])
+e2 = np.unique(ens2, return_counts= True)
+lI = np.where(e1[0]>0)
+plt.title("1")
+plt.show()
+#print(lI)
+plt.plot(e2[0], e2[1])
+plt.title("2")
 plt.show()
 
+test2 = getFit("test", e1, [661, 100, 100])
+getFit("test2", e2, [500, 100, 100])
+#print(test2)
+
+for i in [40, 60, 80, 100, 116]:
+    print(i, conservation(600, i))
 
 # incidence = np.loadtxt(folder + "/compton test 1_ch000.txt", skiprows=4)
 # output = np.loadtxt(folder + "/compton test 1_ch001.txt", skiprows=4)
