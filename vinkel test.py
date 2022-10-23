@@ -7,7 +7,20 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 folder = 'Co/'
 seperator = ' '
-file_type = '.dat'
+file_type = '.txt'
+
+#data = np.loadtxt(folder + "Comptorn spredning 40_ch000" + file_type, skiprows=4)
+#counts = data[:, 1]
+#(x, y) = np.unique(counts, return_counts=True)
+#lI = np.where(x == 0)[0][0]
+#hI = np.where(x >= 1000)[0][0]
+#x = x[lI:hI]
+#y = y[lI:hI]
+#plt.plot(x, y)
+#plt.title("test")
+#plt.show()
+#test = np.loadtxt("Co/Comptorn spredning 40_ch000.dat")
+#test = np.fromfile("Co/Comptorn spredning 40_ch000.dat", dtype=int)
 
 def gaussFit(x, mu, sig, a, b, c):
     lny = np.log(a) - ((x-mu)**2)/(2*sig)
