@@ -8,33 +8,20 @@ import scipy.stats as ss
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
-folder = 'Co'
-seperator = ' '
-file_type = '.dat'
+def get_time_counts(angle):
+    data_0 = np.loadtxt("Co\Comptorn spredning "+ angle + "_ch000.txt", skiprows=4)
+    data_1 = np.loadtxt("Co\Comptorn spredning "+ angle + "_ch001.txt", skiprows=4)
+    #data fra 000
+    time_in_02us = data_0[:,0]
+    count_channel_0 = data_0[:,1]
+    #data fra 001
+    count_channel_1 = data_1[:,1]
 
-#df = pd.read_csv('Comptorn spredning 40_ch000.dat', sep='\s+|\s+')
-#df.to_csv('Comptorn spredning 40_ch000.dat', index=None)
+    time = (time_in_02us[-1] - time_in_02us[0])*5/1000000
+    counts_0 = np.unique(count_channel_0[count_channel_0 > -100], return_counts=True)
+    counts_1 = np.unique(count_channel_1[count_channel_1 > -100], return_counts=True)
 
-
-# with open('Comptorn spredning 40_ch000.dat', 'r') as dat_file:
-#     with open('Comptorn spredning 40_ch000.csv', 'w', newline='') as csv_file:
-#         csv_writer = csv.writer(csv_file)
-#         for row in dat_file:
-#             row = [value.strip() for value in row.split('|')]
-#             csv_writer.writerow(row)
-
-with open("Comptorn spredning 60_ch000.dat",'rb',) as datFile:
-    #print([data.split() for data in datFile])
-    X = []
-    x0 = []
-    for i in datFile:
-        #print(i)
-        x = int.from_bytes(i[:8],'little')
-        X.append(x)
-        x0.append(i)
     
-    # print(X)
-    # print(np.max(X))
-    # print(len(X))
-    # #print(X)
-    # print(int.from_bytes(b'1001000','big'))
+    return time, counts_0, counts_1
+
+
