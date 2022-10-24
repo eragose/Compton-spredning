@@ -49,18 +49,25 @@ def chsToEnergy(data):
 def conservation(E1, theta):
     mc2 = 0.5*1000 #keV
     return E1/(1+(E1/mc2)*(1-np.cos(theta*np.pi/180)))
-def checkConservation(E1, E2, theta, error = 0.11):
-    if (np.abs(1-E2/conservation(E1, theta)) < error):
-        if np.abs(E1-E2)>120:
-            return True
+def checkConservation(E1, E2, theta, error1 = 0.1, error2 = 120):
+    if E1>0:
+        if (np.abs(1-E2/conservation(E1, theta)) < error1):
+            if np.abs(E1-E2)>error2:
+                return True
+            else :
+                return False
+        else:
+            return False
     else:
         return False
 
 
 def getFit(name: str, data: tuple, guess: [int, int, int], lower_limit: int = 0, upper_limit: int = 1000):
-    x = data[0]
-    y = data[1]
-    yler = np.sqrt(y)
+    ll = np.where(data[0]>lower_limit)[0][0]
+    ul = np.where(data[0]<upper_limit)[0][-1]
+    x = data[0][ll:ul]
+    y = data[1][ll:ul]
+    yler = y
     pinit = guess
     xhelp = np.linspace(lower_limit, upper_limit, 500)
     popt, pcov = curve_fit(gaussFit, x, y, p0=pinit, sigma=yler, absolute_sigma=True)
@@ -82,60 +89,36 @@ def getFit(name: str, data: tuple, guess: [int, int, int], lower_limit: int = 0,
     plt.show()
 
     return [popt, perr]
+def filter(theta, data, error1 = 0.11, error2 = 120):
+    chsToEnergy(data)
+    energies = (data[1], data[2])
+    ens1 = []
+    ens2 = []
+    n = len(data[0])
+    for i in np.linspace(0, n-1, n):
+        i = int(i)
+        if checkConservation(data[1][i], data[2][i], theta, error1, error2):
+            ens1 += [data[1][i]]
+            ens2 += [data[2][i]]
+    e1 = np.unique(ens1, return_counts= True)
+    e2 = np.unique(ens2, return_counts= True)
+    return (e1, e2)
+angles = [40, 60, 80, 100, 116]
 
-data = loadData("40")
-#print(data[1], data[2])
-chsToEnergy(data)
-energies = (data[1], data[2])
-ens1 = []
-ens2 = []
-n = len(data[0])
-for i in np.linspace(0, n-1, n):
-    #print(i)
-    i = int(i)
+energies = []
+Energies = []
+for i in angles:
+    (e1, e2) = filter(i, loadData(str(i)), error2=600-conservation(600, i))
+    energies += [[i, e1, e2]]
+    expectedE2 = conservation(600, i)
+    E1 = getFit(str(i) + ": E1", e1, [660, 1000, 1000])
+    E2 = getFit(str(i) + ": E2", e2, [expectedE2, 1000, 1000])
+    Energies = [[i, E1, E2]]
 
-    if checkConservation(data[1][i], data[2][i], 40):
-        ens1 += [data[1][i]]
-        ens2 += [data[2][i]]
 
-e1 = np.unique(ens1, return_counts= True)
-lI = np.where(e1[0]>0)
-#print(lI)
-plt.plot(e1[0], e1[1])
-e2 = np.unique(ens2, return_counts= True)
-lI = np.where(e1[0]>0)
-plt.title("1")
-plt.show()
-#print(lI)
-plt.plot(e2[0], e2[1])
-plt.title("2")
-plt.show()
 
-test2 = getFit("test", e1, [661, 100, 100])
-getFit("test2", e2, [500, 100, 100])
-#print(test2)
+def printCons(angle, energy):
+    print(angle, conservation(energy, angle))
+printCons(116, 200)
 
-for i in [40, 60, 80, 100, 116]:
-    print(i, conservation(600, i))
-
-# incidence = np.loadtxt(folder + "/compton test 1_ch000.txt", skiprows=4)
-# output = np.loadtxt(folder + "/compton test 1_ch001.txt", skiprows=4)
-# toDelete = []
-# for i in np.linspace(0, len(incidence)-1, len(incidence)):
-#     i = int(i)
-#     if np.abs(incidence[i,1]-output[i,1]) > 1000:
-#         toDelete = toDelete + [i]
-# data = np.array([incidence[:,0], incidence[:,1], output[:,1]])
-# data = np.array([np.delete(incidence[:,0], toDelete), np.delete(incidence[:,1], toDelete), np.delete(output[:,1], toDelete)])
-# diffs = data[1]-data[2]
-# (x, y) = np.unique(data[2], return_counts=True)
-# lI = np.where(x == 1)[0][0]
-# hI = np.where(x > 1000)[0][0]
-# x = x[lI:hI]
-# y = y[lI:hI]
-# plt.plot(x, y)
-# plt.show()
-# print(incidence[0,1])
-#
-# getChannel("test", (x,y), 510, 700, [600, 1, 1])
 
