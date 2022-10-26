@@ -89,7 +89,7 @@ for i in np.linspace(0,7,8):
     areaUncertaintyA = np.sqrt((fit[1][1]/fit[0][1])+(fit[1][2]/fit[0][2]))*2*np.pi
     areaUncertainty = areaUncertaintyA/area
     intensity = area/time
-    intensityUncertainty = areaUncertainty/time
+    intensityUncertainty = areaUncertainty#/time
     intensities += [[intensity, intensityUncertainty]]
 intensities = np.array(intensities)
 #Back = getCounts("bg")
@@ -123,20 +123,20 @@ def dif(a,b):
 def logFit(x, a, b, c, d):
     return a/np.log(b*x+c)+d
 
-def expFit(x, a, b, c):
-    return a*np.exp(x*b)+c
+def expFit(x, a, b):
+    return a*np.exp(x*b)
 
 x = np.linspace(0,7,8)*10.09
-xler = np.append([0], np.linspace(1,7,7)**0*0.02)
+xler = np.append([0], np.linspace(1,7,7)*0.02)
 y = intensities[:,0]
 yler = intensities[:,1]
-pinit =  [850, -0.05, 200]
+pinit = [850, -0.05]
 xhelp = np.linspace(0, 100, 100)
 popt, pcov = curve_fit(expFit, x, y, p0=pinit, sigma=yler, absolute_sigma= True)
 print("intensity fit")
 print('a :', popt[0])
 print('b :', popt[1])
-print('c :', popt[2])
+#print('c :', popt[2])
 
 perr = np.sqrt(np.diag(pcov))
 print('usikkerheder:', perr)
@@ -148,4 +148,6 @@ plt.plot(x, expFit(x, *popt), label = "fit")
 plt.errorbar(x, y, yerr = yler, xerr= xler, fmt='o', label = "Intensity")
 plt.title('Intesity')
 plt.legend()
+plt.xlabel("Thickness of aluminium (mm)")
+plt.ylabel("Intensity (keV/s/(16342 mm^2)")
 plt.show()

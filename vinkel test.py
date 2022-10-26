@@ -71,16 +71,25 @@ def getFit(name: str, data: tuple, guess: [int, int, int], lower_limit: int = 0,
     pinit = guess
     xhelp = np.linspace(lower_limit, upper_limit, 500)
     popt, pcov = curve_fit(gaussFit, x, y, p0=pinit, sigma=yler, absolute_sigma=True)
-    print(name)
-    print('mu :', popt[0])
-    print('sigma :', popt[1])
-    print('scaling', popt[2])
-    #print('background', popt[3], popt[4])
     perr = np.sqrt(np.diag(pcov))
-    print('usikkerheder:', perr)
+    text = ""
+    text += "       mu          sigma           scaling " + "\n"
+    text += "values" + str(popt) + "\n"
+    text += "errors" + str(perr)
+    print(name)
+    print(text)
+    #print('mu :', popt[0])
+    #print('sigma :', popt[1])
+    #print('scaling', popt[2])
+    #print('background', popt[3], popt[4])
+
+    #print('usikkerheder:', perr)
     chmin = np.sum(((y - gaussFit(x, *popt)) / yler) ** 2)
     print('chi2:', chmin, ' ---> p:', ss.chi2.cdf(chmin, 4))
-
+    #props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+    # place a text box in upper left in axes coords
+    #plt.text(0.05, 1.05, text, fontsize=14,
+    #        verticalalignment='top', bbox=props)
     plt.plot(x, y, color="r", label="data")
     plt.plot(xhelp, gaussFit(xhelp, *popt), 'k-.', label="fitpoisson")
     plt.legend()
@@ -106,15 +115,29 @@ def filter(theta, data, error1 = 0.11, error2 = 120):
 angles = [40, 60, 80, 100, 116]
 
 energies = []
-Energies = []
+params = []
+times = []
 for i in angles:
-    (e1, e2) = filter(i, loadData(str(i)), error2=600-conservation(600, i))
+    stri = str(i)
+    data = loadData(stri)
+    t1 = data[0][0]
+    t2 = data[0][-1]
+    time = (t2-t1)/10**8
+    (e1, e2) = filter(i, data, error1=0.1, error2=600-conservation(600, i))
     energies += [[i, e1, e2]]
     expectedE2 = conservation(600, i)
-    E1 = getFit(str(i) + ": E1", e1, [660, 1000, 1000])
-    E2 = getFit(str(i) + ": E2", e2, [expectedE2, 1000, 1000])
-    Energies = [[i, E1, E2]]
+    E1 = getFit(stri + ": E1", e1, [660, 1000, 1000])
+    E2 = getFit(stri + ": E2", e2, [expectedE2, 1000, 1000])
+    params += [[E1, E2]]
+    times += [time]
 
+oEs = []
+oEes = []
+pRange = range(len(params))
+for i in pRange:
+    #print(params[i][1][0][0])
+    oEs += [params[i][1][0][0]]
+    oEes += [params[i][1][1][0]]
 
 
 def printCons(angle, energy):
