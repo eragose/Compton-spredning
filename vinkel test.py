@@ -161,7 +161,7 @@ energies = []
 params = []
 times = []
 pRange = np.linspace(0, len(angles)-1, len(angles))
-sizes = [4,3,2,2,1]
+sizes = [5,4,2,2,1]
 
 
 def getandfit(angle, binsize):
