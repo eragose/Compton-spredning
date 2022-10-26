@@ -163,6 +163,7 @@ times = []
 pRange = np.linspace(0, len(angles)-1, len(angles))
 sizes = [4,3,2,2,1]
 
+
 def getandfit(angle, binsize):
 
     stri = str(angle)
