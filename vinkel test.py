@@ -161,7 +161,7 @@ energies = []
 params = []
 times = []
 pRange = np.linspace(0, len(angles)-1, len(angles))
-sizes = [5,4,2,2,1]
+sizes = [13,9,4,3,2]
 
 
 def getandfit(angle, binsize):
@@ -239,12 +239,12 @@ plt.show()
 
 
 events = []
-#for i in pRange:
-#    i = int(i)
-#    events += [np.sum(energies[i][1][1])/times[i]]
+for i in pRange:
+    i = int(i)
+    events += [np.sum(energies[i][1][1])/times[i]]
 
-#plt.scatter(angles, events)
-#plt.show()
+plt.scatter(angles, events)
+plt.show()
 Is = []
 Ies = []
 for i in pRange:
@@ -260,11 +260,20 @@ for i in pRange:
     Is += [area/times[i]]
     Ies += [areaUncertainty]
 
-#def prob(theta):
-#    r0**2*(1/1+661.661*(1-np.cos(theta)))**3*(1+np.cos(theta))
+def prob(theta):
+    alpha = 661.661  # keV
+    r0 = 28.18  # fm
+    theta = theta*np.pi/180
+    brack1 = (1/(1+alpha*(1-np.cos(theta))))**3
+    brack2 = (1+np.cos(theta))/2
+    brack3top = alpha**2*(1-np.cos(theta))**2
+    brack3bot = ((1+np.cos(theta)**2)*(1+alpha*(1-np.cos(theta))))
+    brack3 = (1+brack3top/brack3bot)
+    return (r0**2)*brack1*brack2*brack3
 plt.errorbar(angles, Is, yerr=Ies, xerr=angleErr, fmt=".")
-#angleHelp = np.linspace(angles[0], angles[-1], 100)
-#plt.plot(angleHelp, conservation(661.661, angleHelp))
+angleHelp = np.linspace(0, 180, 180)
+plt.show()
+plt.plot(angleHelp, prob(angleHelp))
 plt.show()
 
 def printCons(angle, energy):
