@@ -85,7 +85,9 @@ for i in np.linspace(0,7,8):
     time = getTime(data)
     countData = getCounts(data, i)
     fit = getChannel(i, countData, 500, 700, [640, 10, 10])
+    # area = sigma * amplitude * 2 pi
     area = fit[0][1]*fit[0][2]*2*np.pi
+    # uncertainty = swqrt(sigmaerr/sigma+amplitudeerr/amplitude)*2*pi
     areaUncertaintyA = np.sqrt((fit[1][1]/fit[0][1])+(fit[1][2]/fit[0][2]))*2*np.pi
     areaUncertainty = areaUncertaintyA/area
     intensity = area/time
@@ -149,6 +151,6 @@ plt.errorbar(x, y, yerr = yler, xerr= xler, fmt='o', label = "Intensity")
 plt.title('Intensity')
 plt.legend()
 plt.xlabel("Thickness of aluminium (mm)")
-plt.ylabel("Intensity (keV/s/(16342 mm^2)")
+plt.ylabel("Intensity (counts/s")
 plt.savefig('Attenuation.pdf')
 plt.show()

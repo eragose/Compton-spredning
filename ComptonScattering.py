@@ -1,5 +1,5 @@
 import numpy as np
-theta = 116
+theta = 40
 BGO = np.loadtxt('Co/Comptorn spredning ' + str(theta) +'_ch000.txt', skiprows=5, usecols=(0,1))
 NaI = np.loadtxt('Co/Comptorn spredning ' + str(theta) +'_ch001.txt', skiprows=5, usecols=(0,1))
 ns = 10**(-9) #1 nanosecond
@@ -27,12 +27,13 @@ lim_NaIc = np.array([])
 for i in sorted(NaI[:,0]):        #Sorting NaI and BGO
     for j in sorted(BGO[:, 0]):
             d = j - i  # Taking the time difference of their entrances
-            if (d*ns > 100*ns): #Checking wether the coincidence difference is larger than a set timelimit
+            if (d*10 > 100*ns): #Checking wether the coincidence difference is larger than a set timelimit
                 # Since NaI and BGO is sorted we make use of that we know that next element will be larger
                 break
-            elif (d*ns < -100*ns):
+            elif (d*10 < -100*ns):
                 # If the difference is negative with larger difference than the timelimit keep searching through the list
                 continue
+            # optimering brug while loops fra midterste tidsindeks
             elif( 700 > np.abs(BGO[np.where(BGO == j)[0][0]][1] + NaI[np.where(NaI == i)[0][0]][1]) > 600):
 
                 #The elif tests for energy conservation between the scattered photon and recoil electron
