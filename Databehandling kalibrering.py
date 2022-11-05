@@ -38,11 +38,11 @@ def getCounts(name: str, lc: int = 1, hc: int = 2000):
 def gaussFit(x, mu, sig, a, b, c):
     lny = np.log(a) - ((x-mu)**2)/(2*sig**2)
     return np.exp(lny) - (b*x+c)
-def getChannel(name: str, data: tuple, lower_limit: int, upper_limit: int, guess: [int, int, int]):
+def getChannel(name: str, data: tuple, lower_limit: int, upper_limit: int, guess: [int, int, int], guess2 = [0,0]):
     x = data[0][lower_limit:upper_limit]
     y = data[1][lower_limit:upper_limit]
     yler = np.sqrt(y)
-    pinit = guess + [0,0]
+    pinit = guess + guess2
     xhelp = np.linspace(lower_limit, upper_limit, 500)
     popt, pcov = curve_fit(gaussFit, x, y, p0=pinit, sigma=yler, absolute_sigma=True)
     print(name)
@@ -74,12 +74,12 @@ Ra = getCounts("Ra")
 CsCh = getChannel("Cs channel", Cs, 500, 750, [600, 10, 1000])
 RaCh = getChannel("Ra channel", Ra, 500, 700, [550, 10, 500])
 CoCh = getChannel("Co channel", Co, 1000, 1150, [1050, 10, 10])
-AmCh = getChannel("Am channel", Am, 40, 80, [60, 0.01, 1])
+AmCh = getChannel("Am channel", Am, 40, 80, [60, 100, 6000], guess2=[10, 1000])
 CoCh2 = getChannel("Co channel 2", Co, 1140, 1300, [1200, 10, 10])
-x = np.array([CsCh[0][0], RaCh[0][0], CoCh[0][0], CoCh2[0][0]])
-xler = np.array([CsCh[1][0], RaCh[1][0], CoCh[1][0], CoCh2[1][0]])
-y = [661.661, 609, 1173.238, 1331.77] #KeV
-yler = [0.03, 0.01, 0.015, y[3]*0.0015]
+x = np.array([CsCh[0][0], RaCh[0][0], CoCh[0][0], CoCh2[0][0], AmCh[0][0]])
+xler = np.array([CsCh[1][0], RaCh[1][0], CoCh[1][0], CoCh2[1][0]], AmCh[1][0])
+y = [661.661, 609, 1173.238, 1331.77, 59.6] #KeV
+yler = [0.03, 0.01, 0.015, y[3]*0.015, y[4]*0.015]
 #xler =[10, 10, 10]
 def funlin(x, a, b):
     return a*x+b
@@ -103,6 +103,7 @@ plt.show()
 
 print("xler: ", xler)
 
+#kalibrering 1.12*x-18.18
 
 
 

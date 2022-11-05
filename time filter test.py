@@ -18,22 +18,26 @@ def loadData(name):
     ch1 = dat1[:,1]
     return dat0, dat1
 
-dats = []
+dats=[]
+timedifferences = np.array([])
+timedifferences1 = np.array([])
 angles = [40, 60, 80, 100, 116]
 for i in angles:
     i = str(i)
     dat0, dat1 = loadData(i)
-    toDelete = np.where(dat0[:,1]<0)
+    toDelete = np.where(dat0[:,1]<1)
     #print(np.where(dat1[:,1]<0))
     #rint(dat0[713])
     #print(dat1[713])
-    toDelete = np.append(toDelete, np.where(dat1[:,1]<0))
+    toDelete = np.append(toDelete, np.where(dat1[:,1]<1))
     toDelete = np.append(toDelete, np.where(dat1[:, 1] > 800))
     toDelete = np.append(toDelete, np.where(dat0[:, 1] > 800))
-
+    timedifferences1 = dat1[:, 0] - dat0[:, 0]
+    toDelete = np.append(toDelete, np.where(timedifferences1>100))
     dat0 = np.delete(dat0, toDelete, 0)
     dat1 = np.delete(dat1, toDelete, 0)
     dats += [(dat0, dat1)]
+    #timedifferences = dat1[:, 0]-dat0[:, 0]
     plt.scatter(dat0[:, 1], dat1[:, 1], alpha=0.05)
     plt.title("BGO vs NaI " + str(i) + " degrees")
     plt.xlabel("BGO")
