@@ -21,7 +21,7 @@ def gaussFit(x, mu, sig, a, b, c):
     return np.exp(lny)+b*x+c
 
 
-def getFit(name: str, data: tuple, guess: [int, int, int], lower_limit: int = 0, upper_limit: int = 1000, fun = gaussFit, guess2= [0,0]):
+def getFit(name: str, data: tuple, guess: [int, int, int], lower_limit: int = 0, upper_limit: int = 1000, fun = gaussFit, guess2= [0,0], plot=False):
     # print(np.where(data[0]>lower_limit))
     ll = np.where(data[0]>lower_limit)[0][0]
     ul = np.where(data[0]<upper_limit)[0][-1]
@@ -50,34 +50,64 @@ def getFit(name: str, data: tuple, guess: [int, int, int], lower_limit: int = 0,
     # place a text box in upper left in axes coords
     #plt.text(0.05, 1.05, text, fontsize=14,
     #        verticalalignment='top', bbox=props)
-    plt.xlabel('Channel')
-    plt.ylabel('Counts')
-    plt.scatter(x, y, color="r", label="data")
-    plt.plot(xhelp, fun(xhelp, *popt), 'k-.', label="fitgauss")
-    plt.legend()
-
-    plt.title(name)
-    plt.show()
+    if plot:
+        plt.xlabel('Channel')
+        plt.ylabel('Counts')
+        plt.scatter(x, y, color="r", label="data")
+        plt.plot(xhelp, fun(xhelp, *popt), 'k-.', label="fitgauss")
+        plt.legend()
+        plt.title(name)
+        plt.show()
 
     return [popt, perr]
 
 
-dat0, dat1 = loadData('40')
-NaIChannels, NaICounts = np.unique(dat1[:,1], return_counts=True)
-NaI40 = getFit('NaI 40', (NaIChannels, NaICounts), [500,10,10])
-BGO40 = getFit('BGO 40', np.unique(dat0[:,1], return_counts=True), [100,10,10])
+def checkcompton(data, angle, plot=False):
+    name = str(angle)
+    NaIChannels, NaICounts = np.unique(data[1][:, 1], return_counts=True)
+    expected = conservation(angle)
+    NaI = getFit('NaI ' + name, (NaIChannels, NaICounts), [expected, 10, 10], plot=plot)
+    BGO = getFit('BGO ' + name, np.unique(data[0][:, 1], return_counts=True), [661-expected, 10, 10], plot=plot)
+    plt.xlabel('BGO')
+    plt.ylabel('NaI')
+    plt.title('BGO vs Nai ' + name + ' + markering af compton zone')
+    BGOenergy = BGO[0][0]
+    NaIenergy = NaI[0][0]
+    BGOuncertainty = BGO[0][1]
+    NaIuncertainty = NaI[0][1]
+    plt.axvline(BGOenergy, label='measured energy')
+    plt.axhline(NaIenergy)
+    plt.axvspan(BGOenergy - BGOuncertainty, BGOenergy + BGOuncertainty, alpha=0.2,
+                label='Energy confidence interval')
+    plt.axhspan(NaIenergy - NaIuncertainty, NaIenergy + NaIuncertainty, alpha=0.2)
+    plt.scatter(data[0][:, 1], data[1][:, 1], alpha=0.1, label='Datapoints')
+    plt.legend()
+    plt.show()
+    return NaI
 
-plt.xlabel('BGO')
-plt.ylabel('NaI')
-plt.title('BGO vs Nai 40 + markering af compton zone')
-BGO40energy = BGO40[0][0]
-NaI40energy = NaI40[0][0]
-BGO40uncertainty = BGO40[0][1]
-NaI40uncertainty = NaI40[0][1]
-plt.axvline(BGO40energy, label='measuered energy')
-plt.axhline(NaI40energy)
-plt.axvspan(BGO40energy-BGO40uncertainty, BGO40energy+BGO40uncertainty, alpha=0.2, label='Energy confidence interval')
-plt.axhspan(NaI40energy-NaI40uncertainty, NaI40energy+NaI40uncertainty, alpha=0.2)
-plt.scatter(dat0[:,1], dat1[:, 1], alpha=0.1, label='Datapoints')
-plt.legend()
+
+def conservation( theta):
+    mc2 = 0.5*1000 #keV
+    E1 = 661
+    return E1/(1+(E1/mc2)*(1-np.cos(theta*np.pi/180)))
+
+
+dat40 = loadData('40')
+NaI40 = checkcompton(dat40, 40, plot= True)
+
+dat60 = loadData('60')
+NaI60 = checkcompton(dat60, 60, True)
+
+dat80 = loadData('80')
+NaI80 = checkcompton(dat80, 80, True)
+
+dat100 = loadData('100')
+test = np.unique(dat100[0][:,1], return_counts=True)
+plt.scatter(test[0], test[1])
 plt.show()
+print('test', conservation(100))
+NaI100 = checkcompton(dat100, 100, True)
+
+dat116 = loadData('116')
+NaI116 = checkcompton(dat116, 116, True)
+
