@@ -103,7 +103,7 @@ plt.show()
 
 print("xler: ", xler)
 
-#kalibrering 1.12*x-18.18
+#kalibrering 1.121651*x-18.177
 
 
 

@@ -1,7 +1,4 @@
 import numpy as np
-import pandas as pd
-import glob
-import os
 import scipy.stats as ss
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
@@ -11,8 +8,8 @@ file_type = '.txt'
 
 
 def loadData(name):
-    dat0 = np.loadtxt(folder + "Energy_filtered Compton_spredning " + name + "_ch000" + file_type, skiprows=4)
-    dat1 = np.loadtxt(folder + "Energy_filtered Compton_spredning " + name + "_ch001" + file_type, skiprows=4)
+    dat0 = np.loadtxt(folder + "Impuls_filtered Compton_spredning " + name + "_ch000" + file_type)
+    dat1 = np.loadtxt(folder + "Impuls_filtered Compton_spredning " + name + "_ch001" + file_type)
     return dat0, dat1
 
 
@@ -21,7 +18,11 @@ def gaussFit(x, mu, sig, a, b, c):
     return np.exp(lny)+b*x+c
 
 
-def getFit(name: str, data: tuple, guess: [int, int, int], lower_limit: int = 0, upper_limit: int = 1000, fun = gaussFit, guess2= [0,0], plot=False):
+def chToEnergy(ch):
+    return 1.12166*ch-18.19
+
+
+def getFit(name: str, data: tuple, guess: [int, int, int], lower_limit: int = 0, upper_limit: int = 700, fun = gaussFit, guess2= [0,0], plot=False):
     # print(np.where(data[0]>lower_limit))
     ll = np.where(data[0]>lower_limit)[0][0]
     ul = np.where(data[0]<upper_limit)[0][-1]
@@ -65,6 +66,10 @@ def getFit(name: str, data: tuple, guess: [int, int, int], lower_limit: int = 0,
 def checkcompton(data, angle, plot=False):
     name = str(angle)
     NaIChannels, NaICounts = np.unique(data[1][:, 1], return_counts=True)
+    #NaICounts, NaIChannels = np.histogram(data[1][:, 1], bins='auto')
+    #for i in range(np.size(NaIChannels)-1):
+    #    i = int(i)
+    #    NaIChannels[i] = (NaIChannels[i]+NaIChannels[i+1])/2
     expected = conservation(angle)
     NaI = getFit('NaI ' + name, (NaIChannels, NaICounts), [expected, 10, 10], plot=plot)
     BGO = getFit('BGO ' + name, np.unique(data[0][:, 1], return_counts=True), [661-expected, 10, 10], plot=plot)
@@ -93,7 +98,7 @@ def conservation( theta):
 
 
 dat40 = loadData('40')
-NaI40 = checkcompton(dat40, 40, plot= True)
+NaI40 = checkcompton(dat40, 40, plot=True)
 
 dat60 = loadData('60')
 NaI60 = checkcompton(dat60, 60, True)
@@ -102,12 +107,25 @@ dat80 = loadData('80')
 NaI80 = checkcompton(dat80, 80, True)
 
 dat100 = loadData('100')
-test = np.unique(dat100[0][:,1], return_counts=True)
-plt.scatter(test[0], test[1])
-plt.show()
-print('test', conservation(100))
 NaI100 = checkcompton(dat100, 100, True)
 
 dat116 = loadData('116')
 NaI116 = checkcompton(dat116, 116, True)
+
+print('test80', conservation(80))
+
+# Plots the output energies
+oEs = [NaI40[0][0], NaI60[0][0], NaI80[0][0], NaI100[0][0], NaI116[0][0]]
+oEes = [[NaI40[1][0], NaI60[1][0], NaI80[1][0], NaI100[1][0], NaI116[1][0]]]
+
+angles = np.array([40, 60, 80, 100, 116])
+angleErr = angles**0
+
+plt.errorbar(angles, oEs, yerr=oEes, xerr=angleErr, fmt=",")
+angleHelp = np.linspace(angles[0], angles[-1], 100)
+plt.plot(angleHelp, conservation(angleHelp))
+plt.show()
+
+
+
 
