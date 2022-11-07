@@ -1,8 +1,4 @@
 import numpy as np
-import pandas as pd
-import glob
-import os
-import scipy.stats as ss
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 folder = 'Co/'
