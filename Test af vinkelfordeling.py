@@ -51,13 +51,15 @@ def getFit(name: str, data: tuple, guess: [int, int, int], lower_limit: int = 0,
     # place a text box in upper left in axes coords
     #plt.text(0.05, 1.05, text, fontsize=14,
     #        verticalalignment='top', bbox=props)
+    plt.xlabel('Channel')
+    plt.ylabel('Counts')
+    plt.scatter(x, y, color="r", label="data")
+    plt.plot(xhelp, fun(xhelp, *popt), 'k-.', label="fitgauss")
+    plt.legend()
+    plt.title(name + ' gaussfit')
+    plt.savefig(name+' gaussfit.pdf')
     if plot:
-        plt.xlabel('Channel')
-        plt.ylabel('Counts')
-        plt.scatter(x, y, color="r", label="data")
-        plt.plot(xhelp, fun(xhelp, *popt), 'k-.', label="fitgauss")
-        plt.legend()
-        plt.title(name)
+
         plt.show()
 
     return [popt, perr]
@@ -75,7 +77,7 @@ def checkcompton(data, angle, plot=False):
     BGO = getFit('BGO ' + name, np.unique(data[0][:, 1], return_counts=True), [661-expected, 10, 10], plot=plot)
     plt.xlabel('BGO')
     plt.ylabel('NaI')
-    plt.title('BGO vs Nai ' + name + ' + markering af compton zone')
+    plt.title('BGO vs NaI ' + name + ' + markering af compton zone')
     BGOenergy = BGO[0][0]
     NaIenergy = NaI[0][0]
     BGOuncertainty = BGO[0][1]
@@ -124,6 +126,10 @@ angleErr = angles**0
 plt.errorbar(angles, oEs, yerr=oEes, xerr=angleErr, fmt=",")
 angleHelp = np.linspace(angles[0], angles[-1], 100)
 plt.plot(angleHelp, conservation(angleHelp))
+plt.xlabel('Angle (Degrees)')
+plt.ylabel('Energy (KeV)')
+plt.title('Comparison with theoretical energy')
+plt.savefig('Comparison with theoretical energy.pdf')
 plt.show()
 
 NaIparams = [NaI40, NaI60, NaI80, NaI100, NaI116]
@@ -159,6 +165,10 @@ def prob(theta):
 plt.errorbar(angles, Is, yerr=Ies, xerr=angleErr, fmt=".")
 angleHelp = np.linspace(35, 120, 180)
 plt.plot(angleHelp, prob(angleHelp))
+plt.xlabel('Angle (degrees)')
+plt.ylabel('Intensity (counts pr second)')
+plt.title('Comparison with theoretical intensity')
+plt.savefig('Comparison with theoretical intensity.pdf')
 plt.show()
 
 
