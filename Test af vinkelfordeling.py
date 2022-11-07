@@ -126,6 +126,41 @@ angleHelp = np.linspace(angles[0], angles[-1], 100)
 plt.plot(angleHelp, conservation(angleHelp))
 plt.show()
 
+NaIparams = [NaI40, NaI60, NaI80, NaI100, NaI116]
+
+times = np.loadtxt('times')
+Is = []
+Ies = []
+for i in range(len(NaIparams)):
+    i = int(i)
+    #print(params[i][1][0][0])
+    sig = NaIparams[i][0][1]
+    amp = NaIparams[i][0][2]
+    area = sig * amp * 2 * np.pi
+    sigerr = NaIparams[i][1][1]
+    amperr = NaIparams[i][1][2]
+    areaUncertaintyA = np.sqrt((sigerr / sig) + (amperr / amp)) * 2 * np.pi
+    areaUncertainty = areaUncertaintyA / area
+    Is += [area/times[i,1]]
+    Ies += [areaUncertainty]
+
+def prob(theta):
+    alpha = 661.661  # keV
+    r0 = 28.18  # fm
+    theta = theta*np.pi/180
+    brack1 = (1/(1+alpha*(1-np.cos(theta))))**3
+    brack2 = (1+np.cos(theta))/2
+    brack3top = alpha**2*(1-np.cos(theta))**2
+    brack3bot = ((1+np.cos(theta)**2)*(1+alpha*(1-np.cos(theta))))
+    brack3 = (1+brack3top/brack3bot)
+    return (r0**2)*brack1*brack2*brack3
+
+
+plt.errorbar(angles, Is, yerr=Ies, xerr=angleErr, fmt=".")
+angleHelp = np.linspace(35, 120, 180)
+plt.plot(angleHelp, prob(angleHelp))
+plt.show()
+
 
 
 

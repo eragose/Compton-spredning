@@ -31,18 +31,18 @@ for i in angles:
     dat0, dat1 = loadData(i)
 
     #toDelete = np.where(np.abs(conservationtest(dat0[:, 1], dat1[:, 1], theta)-dat1[:, 1]) > 50)
-    toDelete = np.where(np.abs(conservation(theta) - dat1[:, 1]) > 50)
+    toDelete = np.where(np.abs(conservation(theta) - dat1[:, 1]) > 60)
     #print(np.where(dat1[:,1]<0))
     #rint(dat0[713])
     #print(dat1[713])
 
-
+    plt.scatter(dat0[:, 1], dat1[:, 1], alpha=0.05)
 
     dat0 = np.delete(dat0, toDelete, 0)
     dat1 = np.delete(dat1, toDelete, 0)
     #dats += [(dat0, dat1)]
 
-    plt.scatter(dat0[:, 1], dat1[:, 1], alpha=0.3)
+    plt.scatter(dat0[:, 1], dat1[:, 1], alpha=0.01, color='r')
 
     plt.title("BGO vs NaI " + str(i) + " degrees")
     plt.xlabel("BGO")

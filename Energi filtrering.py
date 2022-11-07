@@ -47,12 +47,12 @@ for i in angles:
         else:
             newDat1 = np.append(newDat1, [[dat1[j, 0], chToEnergy(dat1[j, 1])]], axis=0)
     dat0, dat1 = newDat0, newDat1
-    toDelete = np.where((dat0[:, 1]+dat1[:, 1]) < 550)
+    toDelete = np.where((dat0[:, 1]+dat1[:, 1]) < 590)
     #print(np.where(dat1[:,1]<0))
     #rint(dat0[713])
     #print(dat1[713])
 
-    toDelete = np.append(toDelete, np.where((dat0[:, 1]+dat1[:, 1]) > 700))
+    toDelete = np.append(toDelete, np.where((dat0[:, 1]+dat1[:, 1]) > 730))
 
     dat0 = np.delete(dat0, toDelete, 0)
     dat1 = np.delete(dat1, toDelete, 0)
