@@ -163,14 +163,29 @@ def prob(theta):
 
 
 plt.errorbar(angles, Is, yerr=Ies, xerr=angleErr, fmt=".")
+plt.xlabel('Angle (degrees)')
+plt.ylabel('Intensity (counts/s)')
+plt.title('Measured intensity')
+plt.savefig('Measured intensity.pdf')
+plt.show()
 angleHelp = np.linspace(35, 120, 180)
 plt.plot(angleHelp, prob(angleHelp))
 plt.xlabel('Angle (degrees)')
-plt.ylabel('Intensity (counts pr second)')
-plt.title('Comparison with theoretical intensity')
+plt.ylabel('Probability')
+plt.title('Theoretical intensity')
 plt.savefig('Comparison with theoretical intensity.pdf')
 plt.show()
 
+dats = [dat40, dat60, dat80, dat100, dat116]
+Is=[]
+for i in range(len(dats)):
+    i = int(i)
+    I = np.sum(dats[i][1][:,1])
+    t = times[i][1]
+    Is += [I/t]
+
+plt.scatter(angles, Is)
+plt.show()
 
 
 

@@ -28,11 +28,14 @@ print(np_array_values)
 def getData(name):
     return np.loadtxt("Attenuation/Attenuation Aluminium " + name + "_ch001.txt", skiprows=4)
 
+
 def getTime(data):
     times = data[:,0]
     start = times[0]
     end = times[-1]
     return (end-start)/10**8
+
+
 def getCounts(data, name: str, lc: int = 1, hc: int = 1000):
     counts = data[:, 1]
     (x, y) = np.unique(counts, return_counts=True)
@@ -88,10 +91,10 @@ for i in np.linspace(0,7,8):
     # area = sigma * amplitude * 2 pi
     area = fit[0][1]*fit[0][2]*2*np.pi
     # uncertainty = swqrt(sigmaerr/sigma+amplitudeerr/amplitude)*2*pi
-    areaUncertaintyA = np.sqrt((fit[1][1]/fit[0][1])+(fit[1][2]/fit[0][2]))*2*np.pi
-    areaUncertainty = areaUncertaintyA/area
+    areaUncertaintyA = np.sqrt((fit[1][1]/fit[0][1])**2+(fit[1][2]/fit[0][2])**2)*2*np.pi
+    areaUncertainty = areaUncertaintyA*area
     intensity = area/time
-    intensityUncertainty = areaUncertainty#/time
+    intensityUncertainty = areaUncertainty/time
     intensities += [[intensity, intensityUncertainty]]
 intensities = np.array(intensities)
 #Back = getCounts("bg")
@@ -128,7 +131,7 @@ def logFit(x, a, b, c, d):
 def expFit(x, a, b):
     return a*np.exp(x*b)
 
-x = np.linspace(0,7,8)*10.09
+x = np.linspace(0,7,8)*10.093
 xler = np.append([0], np.linspace(1,7,7)*0.02)
 y = intensities[:,0]
 yler = intensities[:,1]
