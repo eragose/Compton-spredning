@@ -123,12 +123,13 @@ oEes = [[NaI40[1][0], NaI60[1][0], NaI80[1][0], NaI100[1][0], NaI116[1][0]]]
 angles = np.array([40, 60, 80, 100, 116])
 angleErr = angles**0
 
-plt.errorbar(angles, oEs, yerr=oEes, xerr=angleErr, fmt=",")
-angleHelp = np.linspace(angles[0], angles[-1], 100)
-plt.plot(angleHelp, conservation(angleHelp))
+plt.errorbar(angles, oEs, yerr=oEes, xerr=angleErr, fmt=",", label='measured energies')
+angleHelp = np.linspace(angles[0]-5, angles[-1]+4, 100)
+plt.plot(angleHelp, conservation(angleHelp), label='Theoretical energy')
 plt.xlabel('Angle (Degrees)')
 plt.ylabel('Energy (KeV)')
 plt.title('Comparison with theoretical energy')
+plt.legend()
 plt.savefig('Comparison with theoretical energy.pdf')
 plt.show()
 
@@ -145,10 +146,10 @@ for i in range(len(NaIparams)):
     area = sig * amp * 2 * np.pi
     sigerr = NaIparams[i][1][1]
     amperr = NaIparams[i][1][2]
-    areaUncertaintyA = np.sqrt((sigerr / sig) + (amperr / amp)) * 2 * np.pi
-    areaUncertainty = areaUncertaintyA / area
+    areaUncertaintyA = np.sqrt((sigerr / sig)**2 + (amperr / amp)**2) * 2 * np.pi
+    areaUncertainty = areaUncertaintyA * area
     Is += [area/times[i,1]]
-    Ies += [areaUncertainty]
+    Ies += [areaUncertainty/times[i,1]]
 
 def prob(theta):
     alpha = 661.661  # keV

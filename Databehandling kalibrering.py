@@ -32,6 +32,8 @@ def getCounts(name: str, lc: int = 1, hc: int = 2000):
     y = y[lI:hI]
     plt.plot(x, y)
     plt.title(name)
+    plt.xlabel('Channel')
+    plt.ylabel('Counts')
     plt.show()
     return (x, y)
 
@@ -57,6 +59,8 @@ def getChannel(name: str, data: tuple, lower_limit: int, upper_limit: int, guess
 
     plt.plot(x, y, color="r", label="data")
     plt.plot(xhelp, gaussFit(xhelp, *popt), 'k-.', label="gaussfit")
+    plt.xlabel('Channel')
+    plt.ylabel('Counts')
     plt.legend()
 
     plt.title(name)
@@ -96,9 +100,12 @@ print('usikkerheder:', perr)
 #print(x)
 chmin = np.sum(((y - funlin(x, *popt)) / yler) ** 2)
 print('chi2:', chmin, ' ---> p:', ss.chi2.cdf(chmin, 4))
-plt.scatter(x, y, label="data")
+plt.errorbar(x, y, yerr=yler, label="data", fmt='o')
 plt.plot(xhelp, funlin(xhelp, *popt), label="fit")
 plt.legend()
+plt.xlabel('Channel')
+plt.ylabel('Energy')
+plt.savefig('CH-E Calibration')
 plt.show()
 
 print("xler: ", xler)

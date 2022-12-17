@@ -150,7 +150,7 @@ print('chi2:', chmin, ' ---> p:', ss.chi2.cdf(chmin, 4))
 
 plt.plot(x, expFit(x, *popt), label = "fit")
 
-plt.errorbar(x, y, yerr = yler, xerr= xler, fmt='+', label = "Intensity", capsize=10)
+plt.errorbar(x, y, yerr = yler, xerr= xler, fmt='o', label = "Intensity", capsize=10)
 plt.title('Intensity')
 plt.legend()
 plt.xlabel("Thickness of aluminium (mm)")
