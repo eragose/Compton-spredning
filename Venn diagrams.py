@@ -14,9 +14,9 @@ plt.scatter(energyfilteredBGO[:, 1], energyfilteredNaI[:, 1], alpha=0.05,
 plt.scatter(impulsfilteredBGO[:, 1], impulsfilteredNaI[:, 1], alpha=0.05,
             label='Filtered for conservation of momentum (Green)')
 plt.legend()
-plt.title('Venndiagram of filtering')
-plt.xlabel('BGO')
-plt.ylabel('NaI')
+plt.title('Events at different levels of filtering')
+plt.xlabel('BGO (keV)')
+plt.ylabel('NaI (keV)')
 plt.savefig('VennDiagram.pdf')
 plt.show()
 

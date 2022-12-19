@@ -86,6 +86,7 @@ for i in np.linspace(0,7,8):
     i = str(int(i))
     data = getData(i)
     time = getTime(data)
+    print(f'time for {i}: {time}')
     countData = getCounts(data, i)
     fit = getChannel(i, countData, 500, 700, [640, 10, 10])
     # area = sigma * amplitude * 2 pi

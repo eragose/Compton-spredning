@@ -51,15 +51,15 @@ def getFit(name: str, data: tuple, guess: [int, int, int], lower_limit: int = 0,
     # place a text box in upper left in axes coords
     #plt.text(0.05, 1.05, text, fontsize=14,
     #        verticalalignment='top', bbox=props)
-    plt.xlabel('Channel')
-    plt.ylabel('Counts')
-    plt.scatter(x, y, color="r", label="data")
-    plt.plot(xhelp, fun(xhelp, *popt), 'k-.', label="fitgauss")
-    plt.legend()
-    plt.title(name + ' gaussfit')
-    plt.savefig(name+' gaussfit.pdf')
-    if plot:
 
+    if plot:
+        plt.xlabel('Channel')
+        plt.ylabel('Counts')
+        plt.scatter(x, y, color="r", label="data")
+        plt.plot(xhelp, fun(xhelp, *popt), 'k-.', label="fitgauss")
+        plt.legend()
+        plt.title(name + ' gaussfit')
+        plt.savefig(name + ' gaussfit.pdf')
         plt.show()
 
     return [popt, perr]
@@ -95,24 +95,24 @@ def checkcompton(data, angle, plot=False):
 
 def conservation( theta):
     mc2 = 0.5*1000 #keV
-    E1 = 661
+    E1 = 661.7
     return E1/(1+(E1/mc2)*(1-np.cos(theta*np.pi/180)))
 
 
 dat40 = loadData('40')
-NaI40 = checkcompton(dat40, 40, plot=True)
+NaI40 = checkcompton(dat40, 40)
 
 dat60 = loadData('60')
-NaI60 = checkcompton(dat60, 60, True)
+NaI60 = checkcompton(dat60, 60)
 
 dat80 = loadData('80')
-NaI80 = checkcompton(dat80, 80, True)
+NaI80 = checkcompton(dat80, 80)
 
 dat100 = loadData('100')
-NaI100 = checkcompton(dat100, 100, True)
+NaI100 = checkcompton(dat100, 100)
 
 dat116 = loadData('116')
-NaI116 = checkcompton(dat116, 116, True)
+NaI116 = checkcompton(dat116, 116)
 
 print('test80', conservation(80))
 
@@ -161,16 +161,18 @@ def prob(theta):
     brack3bot = ((1+np.cos(theta)**2)*(1+alpha*(1-np.cos(theta))))
     brack3 = (1+brack3top/brack3bot)
     return (r0**2)*brack1*brack2*brack3
-
+def probfit(theta, a):
+    return a*prob(theta)
 
 plt.errorbar(angles, Is, yerr=Ies, xerr=angleErr, fmt=".")
 plt.xlabel('Angle (degrees)')
 plt.ylabel('Intensity (counts/s)')
 plt.title('Measured intensity')
 plt.savefig('Measured intensity.pdf')
-plt.show()
+#plt.show()
+popt, pcov = curve_fit(probfit, angles, Is, 26, Ies, absolute_sigma=True)
 angleHelp = np.linspace(35, 120, 180)
-plt.plot(angleHelp, prob(angleHelp))
+plt.plot(angleHelp, probfit(angleHelp, *popt))
 plt.xlabel('Angle (degrees)')
 plt.ylabel('Probability')
 plt.title('Theoretical intensity')

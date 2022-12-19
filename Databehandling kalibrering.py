@@ -89,7 +89,7 @@ def funlin(x, a, b):
     return a*x+b
 #yler = np.sqrt(y)
 pinit = [1,1]
-xhelp = np.linspace(0, 2000, 500)
+xhelp = np.linspace(0, 1300, 500)
 popt, pcov = curve_fit(funlin, x, y, p0=pinit, sigma=yler, absolute_sigma=True)
 print("energy fit")
 print('a hældning:', popt[0])
@@ -104,7 +104,8 @@ plt.errorbar(x, y, yerr=yler, label="data", fmt='o')
 plt.plot(xhelp, funlin(xhelp, *popt), label="fit")
 plt.legend()
 plt.xlabel('Channel')
-plt.ylabel('Energy')
+plt.ylabel('Energy (keV)')
+plt.title('Channel to energy calibration')
 plt.savefig('CH-E Calibration')
 plt.show()
 
